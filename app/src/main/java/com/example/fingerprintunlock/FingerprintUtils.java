@@ -9,7 +9,16 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.samigehi.socket.callback.ConnectCallback;
+import com.koushikdutta.async.http.AsyncHttpClient;
+import com.koushikdutta.async.http.socketio.Acknowledge;
+import com.koushikdutta.async.http.socketio.ConnectCallback;
+import com.koushikdutta.async.http.socketio.EventCallback;
+import com.koushikdutta.async.http.socketio.JSONCallback;
+import com.koushikdutta.async.http.socketio.SocketIOClient;
+import com.koushikdutta.async.http.socketio.StringCallback;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 
 public class FingerprintUtils {
@@ -20,7 +29,7 @@ public class FingerprintUtils {
     public FingerprintUtils(Context c) {
         this.context = c;
         //initialize socket
-        SocketIOClient.connect(AsyncHttpClient.getDefaultInstance(), "http://192.168.1.2:3000", new ConnectCallback() {
+        SocketIOClient.connect(AsyncHttpClient.getDefaultInstance(), "http://192.168.1.202:5555", new ConnectCallback() {
             @Override
             public void onConnectCompleted(Exception ex, SocketIOClient client) {
                 if (ex != null) {
@@ -36,6 +45,7 @@ public class FingerprintUtils {
                 client.on("someEvent", new EventCallback() {
                     @Override
                     public void onEvent(JSONArray argument, Acknowledge acknowledge) {
+                        JSONObject arguments;
                         System.out.println("args: " + arguments.toString());
                     }
                 });
