@@ -9,58 +9,73 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.koushikdutta.async.http.AsyncHttpClient;
-import com.koushikdutta.async.http.socketio.Acknowledge;
-import com.koushikdutta.async.http.socketio.ConnectCallback;
-import com.koushikdutta.async.http.socketio.EventCallback;
-import com.koushikdutta.async.http.socketio.JSONCallback;
-import com.koushikdutta.async.http.socketio.SocketIOClient;
-import com.koushikdutta.async.http.socketio.StringCallback;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.samigehi.socket.SocketHelper;
+import com.samigehi.socket.callback.AsyncSocket;
+import com.samigehi.socket.callback.DataEmitter;
+import com.samigehi.socket.callback.SocketListener;
 
 
 public class FingerprintUtils {
     private static final String TAG = MainActivity.class.getName();
+    private SocketHelper helper;
     private BiometricPrompt mBiometricPrompt;
     public Context context;
 
     public FingerprintUtils(Context c) {
         this.context = c;
         //initialize socket
-        SocketIOClient.connect(AsyncHttpClient.getDefaultInstance(), "http://192.168.1.202:5555", new ConnectCallback() {
+        initializeSocket();
+    }
+
+    private void initializeSocket(){
+        helper = new SocketHelper("192.168.1.202", 5555);
+
+        helper.connect(new SocketListener() {
+
             @Override
-            public void onConnectCompleted(Exception ex, SocketIOClient client) {
-                if (ex != null) {
-                    ex.printStackTrace();
-                    return;
+            public void onConnect(AsyncSocket socket) {
+                // on successfully connected to server
+                helper.send("CONNECTED");
+            }
+
+            @Override
+            public void onError(Exception error) {
+                // when an error occurred
+                error.printStackTrace();
+            }
+
+            @Override
+            public void onClosed(Exception error) {
+                // when connection closed by server or an error occurred to forcefully close server connection
+            }
+
+            @Override
+            public void onDisconnect(Exception error) {
+                // when connection closed by server or self closed by calling disconnect
+            }
+
+            @Override
+            public void onDataWrite(String message, Exception error) {
+                // notify when data successfully sent to server
+                Log.d("SocketHelper", "onDataWrite >> " + message);
+                if (error != null)
+                    error.printStackTrace();
+            }
+
+            @Override
+            public void onDataReceived(String message, DataEmitter emitter) {
+                // notify when new data received from server
+                Log.d("SocketHelper", "onDataReceived >> " + message);
+                if (message=="AUTHENTICATE") {
+                    // Request AUTHENTICATION
+                    callbackFunction();
                 }
-                client.setStringCallback(new StringCallback() {
-                    @Override
-                    public void onString(String string) {
-                        System.out.println(string);
-                    }
-                });
-                client.on("someEvent", new EventCallback() {
-                    @Override
-                    public void onEvent(JSONArray argument, Acknowledge acknowledge) {
-                        JSONObject arguments;
-                        System.out.println("args: " + arguments.toString());
-                    }
-                });
-                client.setJSONCallback(new JSONCallback() {
-                    @Override
-                    public void onJSON(JSONObject json) {
-                        System.out.println("json: " + json.toString());
-                    }
-                });
             }
         });
     }
 
     private void sendResponse(String response){
-
+        helper.send("CONNECTED");
     }
     public void callbackFunction() {
         final BiometricPrompt.AuthenticationCallback callback = getAuthenticationCallback();
@@ -130,7 +145,7 @@ public class FingerprintUtils {
                 Log.i(TAG, "onAuthenticationSucceeded");
                 super.onAuthenticationSucceeded(result);
                 Toast.makeText(context, "LOGIN_AUTHORIZED", Toast.LENGTH_SHORT).show();
-                SendResponse("AUTHORIZED");
+                sendResponse("AUTHORIZED");
             }
         };
     }
