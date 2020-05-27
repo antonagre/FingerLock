@@ -9,17 +9,18 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.samigehi.socket.SocketHelper;
-import com.samigehi.socket.callback.AsyncSocket;
-import com.samigehi.socket.callback.DataEmitter;
-import com.samigehi.socket.callback.SocketListener;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+import tech.gusavila92.websocketclient.WebSocketClient;
 
 
 public class FingerprintUtils {
     private static final String TAG = MainActivity.class.getName();
-    private SocketHelper helper;
     private BiometricPrompt mBiometricPrompt;
-    public Context context;
+    private String addr = "192.168.1.202";
+    private WebSocketClient webSocketClient;
+    private Context context;
 
     public FingerprintUtils(Context c) {
         this.context = c;
@@ -27,62 +28,79 @@ public class FingerprintUtils {
         initializeSocket();
     }
 
+    public FingerprintUtils(Context c,String address) {
+        this.context = c;
+        //initialize socket
+        this.addr=address;
+        initializeSocket();
+    }
+
     private void initializeSocket(){
-        helper = new SocketHelper("192.168.1.202", 5555);
+        URI uri;
+        try {
+            uri = new URI("ws://"+addr+":5555");
+        }
+        catch (URISyntaxException e) {
+            e.printStackTrace();
+            return;
+        }
 
-        helper.connect(new SocketListener() {
-
+        webSocketClient = new WebSocketClient(uri) {
             @Override
-            public void onConnect(AsyncSocket socket) {
-                // on successfully connected to server
-                helper.send("CONNECTED");
+            public void onOpen() {
+                System.out.println("onOpen");
+                callbackFunction();
             }
 
             @Override
-            public void onError(Exception error) {
-                // when an error occurred
-                error.printStackTrace();
+            public void onTextReceived(String message) {
+                System.out.println("onTextReceived");
+                handleCommand(message);
             }
 
             @Override
-            public void onClosed(Exception error) {
-                // when connection closed by server or an error occurred to forcefully close server connection
+            public void onBinaryReceived(byte[] data) {
+                System.out.println("onBinaryReceived");
             }
 
             @Override
-            public void onDisconnect(Exception error) {
-                // when connection closed by server or self closed by calling disconnect
+            public void onPingReceived(byte[] data) {
+                System.out.println("onPingReceived");
             }
 
             @Override
-            public void onDataWrite(String message, Exception error) {
-                // notify when data successfully sent to server
-                Log.d("SocketHelper", "onDataWrite >> " + message);
-                if (error != null)
-                    error.printStackTrace();
+            public void onPongReceived(byte[] data) {
+                System.out.println("onPongReceived");
             }
 
             @Override
-            public void onDataReceived(String message, DataEmitter emitter) {
-                // notify when new data received from server
-                Log.d("SocketHelper", "onDataReceived >> " + message);
-                if (message=="AUTHENTICATE") {
-                    // Request AUTHENTICATION
-                    callbackFunction();
-                }
+            public void onException(Exception e) {
+                System.out.println(e.getMessage());
             }
-        });
+
+            @Override
+            public void onCloseReceived() {
+                System.out.println("onCloseReceived");
+            }
+        };
+
+        webSocketClient.setConnectTimeout(10000);
+        webSocketClient.setReadTimeout(60000);
+        webSocketClient.enableAutomaticReconnection(0);
+        webSocketClient.connect();
     }
 
-    private void sendResponse(String response){
-        helper.send("CONNECTED");
+    private void sendResponse(String Response){
+        webSocketClient.send("AUTHORIZED_LOGIN");
+        Log.d(TAG,"Response: "+Response);
     }
+
     public void callbackFunction() {
         final BiometricPrompt.AuthenticationCallback callback = getAuthenticationCallback();
         Prompt(callback);
     }
 
-    public void handleCommand(String command) {
+    private void handleCommand(String command) {
         if (command == "REQ_AUTH") {
             callbackFunction();
         }
@@ -133,6 +151,7 @@ public class FingerprintUtils {
             @Override
             public void onAuthenticationError(int errorCode, CharSequence errString) {
                 super.onAuthenticationError(errorCode, errString);
+                //sendResponse("UNAUTHORIZED");
             }
 
             @Override
@@ -149,4 +168,5 @@ public class FingerprintUtils {
             }
         };
     }
+
 }

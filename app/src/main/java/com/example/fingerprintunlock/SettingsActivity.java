@@ -21,11 +21,11 @@ public class SettingsActivity  extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings);
-        Button bt_update = findViewById(R.id.bt_updateSettings);
-        Button bt_pair = findViewById(R.id.bt_pair);
-        Button bt_home = findViewById(R.id.bt_home);
-        EditText editIP = findViewById(R.id.host_ip_in);
-        CheckBox checkConn = findViewById(R.id.check_pair);
+        Button bt_update = (Button) findViewById(R.id.bt_updateSettings);
+        Button bt_pair = (Button) findViewById(R.id.bt_pair);
+        Button bt_home = (Button) findViewById(R.id.bt_home);
+        EditText editIP = (EditText) findViewById(R.id.host_ip_in);
+        CheckBox checkConn = (CheckBox) findViewById(R.id.check_pair);
         bt_update.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.P)
             @Override

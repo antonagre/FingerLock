@@ -5,9 +5,9 @@
     android:id="@+id/ip_in"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#0CE78D8D"
+    android:background="#0C2B2929"
     android:backgroundTint="#07706E6E"
-    android:backgroundTintMode="screen"
+    android:backgroundTintMode="add"
     tools:context=".MainActivity">
 
     <ImageView
@@ -37,24 +37,15 @@
 
     <Button
         android:id="@+id/AAAA"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="32dp"
-        android:text="AAAA"
-        app:layout_constraintEnd_toStartOf="@+id/button2"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:text="UNLOCK"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
-        android:text="Button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/AAAA" />
-
 </android.support.constraint.ConstraintLayout>
+
