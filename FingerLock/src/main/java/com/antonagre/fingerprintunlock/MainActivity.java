@@ -1,4 +1,4 @@
-package com.example.fingerprintunlock;
+package com.antonagre.fingerprintunlock;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +10,8 @@ import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+
+import com.example.fingerprintunlock.R;
 
 
 public class MainActivity extends AppCompatActivity {

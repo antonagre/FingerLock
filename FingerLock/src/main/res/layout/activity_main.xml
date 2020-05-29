@@ -8,7 +8,7 @@
     android:background="#0C2B2929"
     android:backgroundTint="#07706E6E"
     android:backgroundTintMode="add"
-    tools:context=".MainActivity">
+    tools:context="com.antonagre.fingerprintunlock.MainActivity">
 
     <ImageView
         android:id="@+id/imageView"
@@ -31,7 +31,7 @@
         android:layout_height="45dp"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="32dp"
-        android:text="SETTINGS"
+        android:text="QR-PAIR"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

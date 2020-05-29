@@ -1,4 +1,4 @@
-package com.example.fingerprintunlock;
+package com.antonagre.fingerprintunlock;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -18,7 +18,7 @@ import tech.gusavila92.websocketclient.WebSocketClient;
 public class FingerprintUtils {
     private static final String TAG = MainActivity.class.getName();
     private BiometricPrompt mBiometricPrompt;
-    private String addr = "192.168.1.202";
+    private String addr;
     private WebSocketClient webSocketClient;
     private Context context;
 
@@ -84,14 +84,15 @@ public class FingerprintUtils {
             }
         };
 
-        webSocketClient.setConnectTimeout(10000);
-        webSocketClient.setReadTimeout(60000);
+        webSocketClient.setConnectTimeout(1000);
+        webSocketClient.setReadTimeout(6000);
         webSocketClient.enableAutomaticReconnection(0);
         webSocketClient.connect();
     }
 
     private void sendResponse(String Response){
         webSocketClient.send("AUTHORIZED_LOGIN");
+        webSocketClient.close();
         Log.d(TAG,"Response: "+Response);
     }
 

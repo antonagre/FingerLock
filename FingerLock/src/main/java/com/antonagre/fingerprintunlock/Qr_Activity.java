@@ -1,4 +1,4 @@
-package com.example.fingerprintunlock;
+package com.antonagre.fingerprintunlock;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.budiyev.android.codescanner.CodeScanner;
 import com.budiyev.android.codescanner.CodeScannerView;
 import com.budiyev.android.codescanner.DecodeCallback;
+import com.example.fingerprintunlock.R;
 import com.google.zxing.Result;
 
 public class Qr_Activity extends AppCompatActivity {

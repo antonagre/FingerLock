@@ -20,18 +20,18 @@
         android:theme="@style/AppTheme"
         android:windowSoftInputMode="stateHidden">
         <service
-            android:name=".FingerLockService"
+            android:name="com.antonagre.fingerprintunlock.FingerLockService"
             android:enabled="true"
             android:exported="true"></service>
-        <activity android:name=".MainActivity">
+        <activity android:name="com.antonagre.fingerprintunlock.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".Qr_Activity" />
+        <activity android:name="com.antonagre.fingerprintunlock.SettingsActivity" />
+        <activity android:name="com.antonagre.fingerprintunlock.Qr_Activity" />
 
 
     </application>

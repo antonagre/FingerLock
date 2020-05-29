@@ -1,4 +1,4 @@
-package com.example.fingerprintunlock;
+package com.antonagre.fingerprintunlock;
 /*import android.util.Log;
 
 import javax.crypto.Cipher;
