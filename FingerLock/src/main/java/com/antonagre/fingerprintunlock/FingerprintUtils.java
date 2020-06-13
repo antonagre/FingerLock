@@ -4,104 +4,44 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.hardware.biometrics.BiometricPrompt;
+import android.os.Build;
 import android.os.CancellationSignal;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.net.URI;
-import java.net.URISyntaxException;
+import androidx.annotation.RequiresApi;
 
-import tech.gusavila92.websocketclient.WebSocketClient;
+import java.util.ArrayList;
 
 
 public class FingerprintUtils {
     private static final String TAG = MainActivity.class.getName();
     private BiometricPrompt mBiometricPrompt;
-    private String addr;
-    private WebSocketClient webSocketClient;
     private Context context;
+    private Client client;
 
     public FingerprintUtils(Context c) {
         this.context = c;
+        Utils.setContext(c);
         //initialize socket
-        initializeSocket();
+        initializeClients();
     }
 
-    public FingerprintUtils(Context c,String address) {
-        this.context = c;
-        //initialize socket
-        this.addr=address;
-        initializeSocket();
+    private void initializeClients() {
+        ArrayList<String> hosts = Utils.getHosts();
+        client = new ClientMQTT(hosts.get(0),this);
+        client.initClient();
     }
 
-    private void initializeSocket(){
-        URI uri;
-        try {
-            uri = new URI("ws://"+addr+":5555");
-        }
-        catch (URISyntaxException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        webSocketClient = new WebSocketClient(uri) {
-            @Override
-            public void onOpen() {
-                System.out.println("onOpen");
-                callbackFunction();
-            }
-
-            @Override
-            public void onTextReceived(String message) {
-                System.out.println("onTextReceived");
-                handleCommand(message);
-            }
-
-            @Override
-            public void onBinaryReceived(byte[] data) {
-                System.out.println("onBinaryReceived");
-            }
-
-            @Override
-            public void onPingReceived(byte[] data) {
-                System.out.println("onPingReceived");
-            }
-
-            @Override
-            public void onPongReceived(byte[] data) {
-                System.out.println("onPongReceived");
-            }
-
-            @Override
-            public void onException(Exception e) {
-                System.out.println(e.getMessage());
-            }
-
-            @Override
-            public void onCloseReceived() {
-                System.out.println("onCloseReceived");
-            }
-        };
-
-        webSocketClient.setConnectTimeout(1000);
-        webSocketClient.setReadTimeout(6000);
-        webSocketClient.enableAutomaticReconnection(0);
-        webSocketClient.connect();
-    }
-
-    private void sendResponse(String Response){
-        webSocketClient.send("AUTHORIZED_LOGIN");
-        webSocketClient.close();
-        Log.d(TAG,"Response: "+Response);
-    }
-
+    @RequiresApi(api = Build.VERSION_CODES.P)
     public void callbackFunction() {
         final BiometricPrompt.AuthenticationCallback callback = getAuthenticationCallback();
         Prompt(callback);
     }
 
-    private void handleCommand(String command) {
+    @RequiresApi(api = Build.VERSION_CODES.P)
+    public void handleCommand(String command) {
         if (command == "REQ_AUTH") {
             callbackFunction();
         }
@@ -147,6 +87,7 @@ public class FingerprintUtils {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.P)
     private BiometricPrompt.AuthenticationCallback getAuthenticationCallback() {
         return new BiometricPrompt.AuthenticationCallback() {
             @Override
@@ -165,7 +106,7 @@ public class FingerprintUtils {
                 Log.i(TAG, "onAuthenticationSucceeded");
                 super.onAuthenticationSucceeded(result);
                 Toast.makeText(context, "LOGIN_AUTHORIZED", Toast.LENGTH_SHORT).show();
-                sendResponse("AUTHORIZED");
+                client.sendResponse("AUTHORIZED");
             }
         };
     }

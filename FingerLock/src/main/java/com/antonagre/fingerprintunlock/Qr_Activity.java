@@ -1,9 +1,7 @@
 package com.antonagre.fingerprintunlock;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -21,8 +19,6 @@ public class Qr_Activity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        final SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("FingerUnlock", Context.MODE_PRIVATE);;
-        final SharedPreferences.Editor editor = sharedPref.edit();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.qr_activity);
         final Activity activity=this;
@@ -34,8 +30,7 @@ public class Qr_Activity extends AppCompatActivity {
                 activity.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        editor.putString("DEVICE_IP",result.getText());
-                        editor.commit();
+                        String ip=result.getText();
                         Toast.makeText(activity, result.getText(), Toast.LENGTH_SHORT).show();
                         Intent i = new Intent(activity.getApplicationContext(), MainActivity.class);//REDIRECT TO MAIN ACTIVITY
                         activity.startActivity(i);

@@ -1,8 +1,6 @@
 package com.antonagre.fingerprintunlock;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -26,8 +24,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Button bt_settings= (Button) findViewById(R.id.bt_settings);
         Button bt_aa= (Button) findViewById(R.id.AAAA);
-        final SharedPreferences sharedPref = getApplicationContext().getSharedPreferences("FingerUnlock", Context.MODE_PRIVATE);;
-        ip_device=sharedPref.getString("DEVICE_IP","192.168.1.202");
+        Utils.setContext(this.getApplicationContext());
+
         //finger = new FingerprintUtils(this.getApplicationContext());
         bt_settings.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.P)
